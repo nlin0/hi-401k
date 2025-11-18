@@ -1,6 +1,7 @@
 # Manage Your 401(k) / hi 401k!
 
-Explore 401(k) contribution scenarios with mock data.
+Explore 401(k) contribution scenarios with mock data. 
+[Demo video can be found here!](https://example.com](https://www.youtube.com/watch?v=W8pEFu9tatU))
 
 ## Run locally
 
