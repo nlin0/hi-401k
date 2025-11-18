@@ -78,20 +78,15 @@ export default function App() {
     setType(newType);
   }
 
-  // reset to default values
-  async function handleReset() {
-    setLoading(true);
-    const defaultType = "percentage";
-    const defaultValue = 5;
-
-    setType(defaultType);
-    setValue(defaultValue);
-    await saveContribution({ type: defaultType, value: defaultValue });
-    setSaved({ type: defaultType, value: defaultValue });
-    setLoading(false);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2500);
+  // revert to last saved contribution pulled from backend
+  function handleReset() {
+    if (!saved) return;
+    setType(saved.type);
+    setValue(saved.value);
   }
+
+  const hasUnsavedChanges =
+    saved && (saved.type !== type || saved.value !== value);
 
   return (
     <div className="min-h-screen bg-[var(--hi-neutral-light)]">
@@ -142,7 +137,10 @@ export default function App() {
               paychecksPerYear={ytd?.paychecks_per_year}
             />
             <SaveButton onSave={handleSave} loading={loading} />
-            <ResetButton onReset={handleReset} loading={loading} />
+            <ResetButton
+              onReset={handleReset}
+              disabled={!hasUnsavedChanges || loading}
+            />
             <MonthlyBreakdownCard
               salary={ytd?.salary}
               contributionValue={value}
