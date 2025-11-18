@@ -1,37 +1,33 @@
 ### How to start the program locally
 
-#### Backend Setup
-1. Create and activate a virtual environment:
+#### Backend Setup (in terminal 1)
+Create and activate a virtual environment:
    ```bash
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
-2. Install Python dependencies:
+Install Python dependencies:
    ```bash
    cd backend
    pip install -r requirements.txt
    ```
 
-3. Start the backend server (you need two terminals):
+Start the backend server (you need two terminals):
    ```bash
    uvicorn server:app --reload --host 127.0.0.1 --port 8000
    ```
 
-   The backend will be running at `http://localhost:8000`
-
-#### Frontend Setup
-1. Navigate to the frontend directory:
+#### Frontend Setup (in another terminal 2)
+Navigate to the frontend directory:
    ```bash
    cd frontend
    ```
-
-2. Install dependencies:
+Install dependencies:
    ```bash
    npm install
    ```
-
-3. Start the development server:
+Start the development server:
    ```bash
    npm run dev
    ```
