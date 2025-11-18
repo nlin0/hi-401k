@@ -26,7 +26,9 @@ YTD_FILE = "ytd_data.json"
 
 
 def load_data():
-    """load contribution settings from file, return defaults if file doesn't exist"""
+    """
+    load contribution settings from file, return defaults if file doesn't exist
+    """
     if not os.path.exists(DATA_FILE):
         return {"type": "percentage", "value": 5}
     with open(DATA_FILE, "r") as f:
@@ -34,13 +36,17 @@ def load_data():
 
 
 def save_data(data):
-    """save contribution settings to file"""
+    """
+    save contribution settings to file
+    """
     with open(DATA_FILE, "w") as f:
         json.dump(data, f)
 
 
 def load_ytd_data():
-    """load ytd data from file, return defaults if file doesn't exist"""
+    """
+    load ytd data from file, return defaults if file doesn't exist
+    """
     if not os.path.exists(YTD_FILE):
         return {
             "salary": 100000,
@@ -61,25 +67,33 @@ def save_ytd_data(data):
 
 @app.get("/api/contribution")
 def get_contribution():
-    """get current contribution settings"""
+    """
+    get current contribution settings
+    """
     return load_data()
 
 
 @app.post("/api/contribution")
 def save_contribution(payload: dict):
-    """save contribution settings"""
+    """
+    save contribution settings
+    """
     save_data(payload)
     return {"status": "saved", "data": payload}
 
 
 @app.get("/api/ytd")
 def get_ytd():
-    """get year-to-date data"""
+    """
+    get year-to-date data
+    """
     return load_ytd_data()
 
 
 @app.post("/api/ytd")
 def save_ytd(payload: dict):
-    """save year-to-date data"""
+    """
+    save year-to-date data
+    """
     save_ytd_data(payload)
     return {"status": "saved", "data": payload}

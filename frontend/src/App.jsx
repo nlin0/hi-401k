@@ -19,18 +19,13 @@ import CurrentContributionIndicator from "./components/CurrentContributionIndica
 import Toast from "./components/Toast";
 
 export default function App() {
-  // state for contribution type (percentage or dollar)
+  // states
   const [type, setType] = useState("percentage");
-  // state for contribution value (either % or $ amount)
-  const [value, setValue] = useState(5);
-  // state for year-to-date data (salary, paychecks, employer match, etc.)
+  const [value, setValue] = useState(8); // contribution value (either % or $ amount)
   const [ytd, setYTD] = useState(null);
-  // state for loading status during api calls
-  const [loading, setLoading] = useState(false);
-  // state for toast notification visibility
+  const [loading, setLoading] = useState(false);  // loading status during api calls
   const [showToast, setShowToast] = useState(false);
-  // state for saved contribution (used for header indicator)
-  const [saved, setSaved] = useState(null);
+  const [saved, setSaved] = useState(null); // saved contribution (used for header indicator)
 
   // load initial data from backend on mount
   useEffect(() => {
@@ -53,21 +48,19 @@ export default function App() {
     setTimeout(() => setShowToast(false), 2500);
   }
 
-  // convert between percentage and dollar when switching types
-  // ensures value is correctly translated (e.g., 6% becomes $230/paycheck)
   function handleTypeChange(newType) {
     if (newType === type) return;
 
     const ppYear = ytd?.paychecks_per_year || 26;
     const salary = ytd?.salary || 100000;
 
-    // converting from percentage to dollar: calculate per-paycheck amount
+    // convert between percentage and dollar when switching types
     if (type === "percentage" && newType === "dollar") {
       const annualContrib = salary * (value / 100);
       const perPaycheck = annualContrib / ppYear;
       setValue(Math.round(perPaycheck));
     }
-    // converting from dollar to percentage: calculate percentage of salary
+    // calculate percentage of salary
     else if (type === "dollar" && newType === "percentage") {
       const annualContrib = value * ppYear;
       const pct = salary > 0 ? (annualContrib / salary) * 100 : 0;
