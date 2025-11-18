@@ -1,6 +1,6 @@
 # Manage Your 401(k) / hi 401k!
 
-Lightweight tool to explore 401(k) contribution scenarios with mock data.
+Explore 401(k) contribution scenarios with mock data.
 
 ## Run locally
 
@@ -61,8 +61,6 @@ You should see a local URL (usually `http://localhost:5173`). Open this URL in y
 
 ## How to use
 
-Designed for non-technical users—this is all you need:
-
 1. **Pick contribution type**  
    Toggle between percentage of salary or flat dollars per paycheck.
 
@@ -70,7 +68,7 @@ Designed for non-technical users—this is all you need:
    - Slider (0–20%, 0.1% steps) or quick buttons (3/6/10/15%) in percentage mode.  
    - Currency input in dollar mode (auto-shows the implied percentage).
 
-3. **Read the cards**  
+3. **Info cards**  
    - **Contribution breakdown**: per-paycheck, monthly, and annual totals (/year).  
    - **Employer match donut**: shows employee vs. employer dollars and whether you’re maximizing the match.  
    - **Retirement projection**: estimated nest egg + monthly income (assumes 7% return, 4% withdrawal rule).  
@@ -84,6 +82,6 @@ Designed for non-technical users—this is all you need:
 ## Notes
 
 - Mock YTD data lives in `backend/ytd_data.json`.  
-- IRS 2025 limit warnings fire if projections exceed $23,000 (plus catch-up).  
-- Frontend ↔ backend via REST (`/api/contribution`, `/api/ytd`).  
-- Data persists locally only (JSON files under `backend/`).
+- IRS 2025 limit warnings fire if projections exceed $23,000 (for 2025, plus catch-up).  
+- Frontend is connected to backend via REST (`/api/contribution`, `/api/ytd`).  
+- Data persists locally only for now (JSON files under `backend/`).
