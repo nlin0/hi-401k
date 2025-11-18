@@ -14,6 +14,8 @@ import ContributionLimitWarning from "./components/ContributionLimitWarning";
 import TaxSavingsCard from "./components/TaxSavingsCard";
 import MonthlyBreakdownCard from "./components/MonthlyBreakdownCard";
 import ContributionBreakdownChart from "./components/ContributionBreakdownChart";
+import ProjectionCard from "./components/ProjectionCard";
+import CurrentContributionIndicator from "./components/CurrentContributionIndicator";
 import Toast from "./components/Toast";
 
 export default function App() {
@@ -22,12 +24,14 @@ export default function App() {
   const [ytd, setYTD] = useState(null);
   const [loading, setLoading] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
+  const [savedContribution, setSavedContribution] = useState(null);
 
   // Load initial data
   useEffect(() => {
     fetchContribution().then((data) => {
       setType(data.type);
       setValue(data.value);
+      setSavedContribution({ type: data.type, value: data.value });
     });
 
     fetchYTD().then((data) => setYTD(data));
@@ -38,6 +42,8 @@ export default function App() {
     setLoading(true);
 
     await saveContribution({ type, value });
+    // Update saved contribution after successful save
+    setSavedContribution({ type, value });
 
     setLoading(false);
 
@@ -87,6 +93,8 @@ export default function App() {
       type: defaultType,
       value: defaultValue,
     });
+    // Update saved contribution after successful reset
+    setSavedContribution({ type: defaultType, value: defaultValue });
 
     setLoading(false);
 
@@ -100,7 +108,7 @@ export default function App() {
       {/* Header with Logo */}
       <div className="bg-[var(--hi-white)] border-b border-[var(--hi-neutral-mid)] shadow-sm">
         <div className="max-w-7xl mx-auto px-8 py-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="flex items-center gap-4">
               {/* Fake Logo */}
               <div className="w-12 h-12 bg-[var(--hi-primary-blue)] rounded-lg flex items-center justify-center">
@@ -114,6 +122,15 @@ export default function App() {
                   Adjust your contribution settings and see your retirement projection
                 </p>
               </div>
+            </div>
+            {/* Current Contribution Indicator - always visible, shows saved values */}
+            <div className="md:flex-shrink-0 w-full md:w-auto">
+              <CurrentContributionIndicator
+                type={savedContribution?.type || type}
+                value={savedContribution?.value ?? value}
+                salary={ytd?.salary}
+                paychecksPerYear={ytd?.paychecks_per_year}
+              />
             </div>
           </div>
         </div>
@@ -153,10 +170,26 @@ export default function App() {
               type={type}
               paychecksPerYear={ytd?.paychecks_per_year}
             />
+
+            {/* Tax Savings - moved to left column */}
+            <TaxSavingsCard
+              salary={ytd?.salary}
+              contributionValue={value}
+              type={type}
+              paychecksPerYear={ytd?.paychecks_per_year}
+            />
           </div>
 
           {/* RIGHT COLUMN: Benefits & Match */}
           <div>
+            {/* Retirement Projection - shows long-term impact */}
+            <ProjectionCard
+              salary={ytd?.salary}
+              contributionValue={value}
+              type={type}
+              paychecksPerYear={ytd?.paychecks_per_year}
+            />
+
             <ContributionBreakdownChart
               salary={ytd?.salary}
               contributionValue={value}
@@ -166,18 +199,10 @@ export default function App() {
               paychecksPerYear={ytd?.paychecks_per_year}
             />
 
-            {/* Tax Savings - moved to right column */}
-            <TaxSavingsCard
-              salary={ytd?.salary}
-              contributionValue={value}
-              type={type}
-              paychecksPerYear={ytd?.paychecks_per_year}
-            />
+            {/* YTD Panel - moved underneath employer match */}
+            <YTDPanel ytd={ytd} onUpdate={(updatedYTD) => setYTD(updatedYTD)} />
           </div>
         </div>
-
-        {/* FULL-WIDTH YTD PANEL */}
-        <YTDPanel ytd={ytd} onUpdate={(updatedYTD) => setYTD(updatedYTD)} />
 
         {/* Toast notification */}
         <Toast message="Contribution settings saved!" show={toastVisible} />
