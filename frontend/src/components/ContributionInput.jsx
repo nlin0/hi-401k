@@ -20,12 +20,15 @@ export default function ContributionInput({ type, value, setValue, salary, paych
             <label className="block font-semibold text-[var(--hi-dark-navy)]">
               Contribution Percentage
             </label>
-            <div className="text-2xl font-bold text-[var(--hi-primary-blue)]">{value}%</div>
+            <div className="text-2xl font-bold text-[var(--hi-primary-blue)]">
+              {Number(value).toFixed(1)}%
+            </div>
           </div>
           <input
             type="range"
             min="0"
             max="20"
+            step="0.1"
             value={value}
             onChange={(e) => setValue(Number(e.target.value))}
             style={{

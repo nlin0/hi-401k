@@ -7,7 +7,7 @@ export default function SaveButton({ onSave, loading }) {
       py-3 rounded-lg text-lg font-semibold hover:opacity-90 transition 
       disabled:bg-[var(--hi-gray-border)] disabled:text-[var(--hi-white)] disabled:cursor-not-allowed disabled:opacity-70"
     >
-      {loading ? "Saving..." : "Save Contribution Settings"}
+      {loading ? "Saving..." : "Update Contribution"}
     </button>
   );
 }

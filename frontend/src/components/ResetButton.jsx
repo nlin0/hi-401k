@@ -7,7 +7,7 @@ export default function ResetButton({ onReset, disabled }) {
       py-3 rounded-lg text-lg font-semibold border border-[var(--hi-gray-border)]
       hover:bg-[var(--hi-neutral-light)] transition disabled:bg-[var(--hi-gray-border)] disabled:text-[var(--hi-gray-text)]"
     >
-      Revert to Saved
+      View Current Contribution
     </button>
   );
 }
