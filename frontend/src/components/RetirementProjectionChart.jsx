@@ -8,12 +8,11 @@ export default function RetirementProjectionChart({ salary, contributionValue, t
     if (!salary || !svgRef.current) return;
 
     const drawChart = () => {
-      // Clear previous chart
       d3.select(svgRef.current).selectAll("*").remove();
 
-      // Compact chart for column layout
+      // column layout
       const containerWidth = svgRef.current.parentElement?.clientWidth || 400;
-      const width = Math.max(350, containerWidth - 48); // Account for padding
+      const width = Math.max(350, containerWidth - 48); // accounting for padding
       const height = 280;
       const margin = { top: 20, right: 60, bottom: 40, left: 60 };
 
@@ -29,32 +28,26 @@ export default function RetirementProjectionChart({ salary, contributionValue, t
       const annualReturn = 0.07;
       const salaryGrowth = 0.03;
 
-      // Calculate annual contribution
+      // annual contribution
       const annualContribution = type === "percentage"
         ? salary * (contributionValue / 100)
         : contributionValue * paychecksPerYear;
 
       const contributionGrowth = type === "percentage" ? salaryGrowth : 0;
 
-      // Calculate projection for each year
-      function futureValueOfGrowingContributions(C0, r, g, n) {
-        if (g === r) {
-          return C0 * n * Math.pow(1 + r, n);
-        }
-        return C0 * ((Math.pow(1 + r, n) - Math.pow(1 + g, n)) / (r - g));
-      }
-
+      // Calculate projection for each year using iterative approach
+      // (needed to get balance at each age for the chart)
       const data = [];
       let currentBalance = 0;
 
       for (let age = currentAge; age <= retireAge; age++) {
         const yearsElapsed = age - currentAge;
 
-        // Calculate balance at this age
+        // balance at this age
         if (yearsElapsed === 0) {
           currentBalance = 0;
         } else {
-          // Balance = previous balance * (1 + return) + this year's contribution
+          // balance = previous balance * (1 + return) + this year's contribution
           const yearContribution = annualContribution * Math.pow(1 + contributionGrowth, yearsElapsed);
           currentBalance = currentBalance * (1 + annualReturn) + yearContribution;
         }
@@ -62,7 +55,6 @@ export default function RetirementProjectionChart({ salary, contributionValue, t
         data.push({ age, balance: currentBalance });
       }
 
-      // Scales
       const xScale = d3
         .scaleLinear()
         .domain(d3.extent(data, d => d.age))
@@ -74,7 +66,6 @@ export default function RetirementProjectionChart({ salary, contributionValue, t
         .nice()
         .range([height - margin.bottom, margin.top]);
 
-      // Line generator
       const line = d3
         .line()
         .x(d => xScale(d.age))
