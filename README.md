@@ -1,4 +1,4 @@
-# Hi-401(k)! Contribution Management
+# Manage Your 401(k) / hi 401k!
 
 A web application for managing 401(k) contribution settings
 
