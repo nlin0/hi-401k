@@ -4,13 +4,10 @@ import * as d3 from "d3";
 export default function ContributionBreakdownChart({ salary, contributionValue, type, employerMatchRate, employerMatchCap, paychecksPerYear = 26 }) {
   const svgRef = useRef(null);
 
+  // GRAPH FOR CONTRIBUTION BREAKDOWN
   useEffect(() => {
     if (!salary || !svgRef.current || !employerMatchRate) return;
-
-    // Clear previous chart
     d3.select(svgRef.current).selectAll("*").remove();
-
-    // Smaller chart for visualization
     const width = 180;
     const height = 180;
     const radius = Math.min(width, height) / 2 - 15;
@@ -22,13 +19,13 @@ export default function ContributionBreakdownChart({ salary, contributionValue, 
       .append("g")
       .attr("transform", `translate(${width / 2},${height / 2})`);
 
-    // Calculate contributions
+    // calculate contributions
     const annualEmployeeContribution = type === "percentage"
       ? salary * (contributionValue / 100)
       : contributionValue * paychecksPerYear;
 
-    const contributionPercentage = salary > 0 
-      ? (annualEmployeeContribution / salary) * 100 
+    const contributionPercentage = salary > 0
+      ? (annualEmployeeContribution / salary) * 100
       : 0;
 
     const matchCapPercentage = employerMatchCap || 6;
@@ -43,11 +40,8 @@ export default function ContributionBreakdownChart({ salary, contributionValue, 
 
     if (data.length === 0) return;
 
-    // Pie generator
     const pie = d3.pie().value(d => d.value).sort(null);
     const arc = d3.arc().innerRadius(radius * 0.5).outerRadius(radius);
-
-    // Draw arcs
     const arcs = svg
       .selectAll("arc")
       .data(pie(data))
@@ -61,14 +55,13 @@ export default function ContributionBreakdownChart({ salary, contributionValue, 
       .attr("fill", d => d.data.color)
       .attr("stroke", "#FFFFFF")
       .attr("stroke-width", 2)
-      .on("mouseover", function(event, d) {
+      .on("mouseover", function (event, d) {
         d3.select(this).transition().duration(200).attr("transform", `scale(1.05)`);
       })
-      .on("mouseout", function(event, d) {
+      .on("mouseout", function (event, d) {
         d3.select(this).transition().duration(200).attr("transform", `scale(1)`);
       });
 
-    // Labels - smaller font for smaller chart
     const labelArc = d3.arc().innerRadius(radius * 0.7).outerRadius(radius * 0.7);
 
     arcs
@@ -86,31 +79,31 @@ export default function ContributionBreakdownChart({ salary, contributionValue, 
   }, [salary, contributionValue, type, employerMatchRate, employerMatchCap, paychecksPerYear]);
 
   if (!salary || !employerMatchRate) return null;
-  
-  // Calculate contributions for display
+
+  // contributions for display
   const annualEmployeeContribution = type === "percentage"
     ? salary * (contributionValue / 100)
     : contributionValue * paychecksPerYear;
 
-  const contributionPercentage = salary > 0 
-    ? (annualEmployeeContribution / salary) * 100 
+  const contributionPercentage = salary > 0
+    ? (annualEmployeeContribution / salary) * 100
     : 0;
 
   const matchCapPercentage = employerMatchCap || 6;
   const eligibleSalaryForMatch = Math.min(contributionPercentage, matchCapPercentage);
   const employerMatchPercentage = (eligibleSalaryForMatch / 100) * employerMatchRate;
   const annualEmployerMatch = salary * employerMatchPercentage;
-  
+
   const totalAnnualContribution = annualEmployeeContribution + annualEmployerMatch;
   const freeMoney = annualEmployerMatch;
-  
-  // Calculate if they're leaving money on the table
+
+  // calculate if user is leaving money on the table
   const maxMatchAvailable = salary * (matchCapPercentage / 100) * employerMatchRate;
   const leavingOnTable = maxMatchAvailable - annualEmployerMatch;
   const isMaximizingMatch = contributionPercentage >= matchCapPercentage;
 
   return (
-    <div className="p-6 rounded-lg bg-[var(--hi-white)] border border-[var(--hi-neutral-mid)] shadow-sm">
+    <div className="mt-6 p-6 rounded-lg bg-[var(--hi-white)] border border-[var(--hi-neutral-mid)] shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-[var(--hi-dark-navy)] text-lg">
           Employer Match
@@ -138,14 +131,13 @@ export default function ContributionBreakdownChart({ salary, contributionValue, 
         </div>
       </div>
 
-      {/* Chart and details side by side */}
       <div className="flex items-start gap-6 mb-4">
-        {/* Small chart visualization */}
+        {/* PIE CHART HERE */}
         <div className="flex-shrink-0">
           <svg ref={svgRef}></svg>
         </div>
 
-        {/* Employer match details */}
+        {/* EMPLOYEE MATCH IS HERE */}
         <div className="flex-1 space-y-2">
           <div className="flex justify-between items-center">
             <span className="text-sm text-[var(--hi-neutral-mid)]">Your Contribution:</span>
@@ -170,15 +162,15 @@ export default function ContributionBreakdownChart({ salary, contributionValue, 
       {!isMaximizingMatch && leavingOnTable > 0 && (
         <div className="mt-3 p-3 bg-blue-50 border border-[var(--hi-primary-blue)] rounded">
           <p className="text-xs text-[var(--hi-dark-navy)]">
-            <strong>Tip:</strong> Increase your contribution to {matchCapPercentage}% of salary ({Math.round(salary * matchCapPercentage / 100).toLocaleString()}/year) to maximize your employer match. 
-            You're leaving <strong>${Math.round(leavingOnTable).toLocaleString()}/year</strong> in free money on the table!
+            <strong>Tip:</strong> Increase your contribution to {matchCapPercentage}% of salary ({Math.round(salary * matchCapPercentage / 100).toLocaleString()}/year) to maximize your employer match.
+            You're leaving <strong>${Math.round(leavingOnTable).toLocaleString()}/year</strong> of free money on the table!
           </p>
         </div>
       )}
 
       {isMaximizingMatch && (
         <p className="text-xs text-[var(--hi-primary-blue)] mt-2">
-          ✅ You're maximizing your employer match! That's <strong>${Math.round(freeMoney).toLocaleString()}/year</strong> in free money.
+          Yay! You're maximizing your employer match! That's <strong>${Math.round(freeMoney).toLocaleString()}/year</strong> in free money.
         </p>
       )}
     </div>

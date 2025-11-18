@@ -1,40 +1,44 @@
 export default function ContributionLimitWarning({ salary, contributionValue, type, ytdContributions, paychecksPerYear = 26 }) {
-  // 2024 IRS limits (would be updated yearly in production)
-  const IRS_ANNUAL_LIMIT_2024 = 23000; // $23,000 for 2024 for those under 50
-  const IRS_CATCH_UP_LIMIT = 7650; // Additional $7,650 for 50+
-  const currentYear = 2024;
-  
+  // CONSTANTS (dummies in this case)
+  const IRS_ANNUAL_LIMIT_2025 = 23000;
+  const IRS_CATCH_UP_LIMIT = 7500;
+  // yr is not really needed since it's hard coded here..
+  // const currentYear = 2025; 
+  const userAge = 30;
+
   if (!salary) return null;
-  
-  // Calculate annual contribution based on current setting
-  const annualContribution = type === "percentage" 
+
+  // calculate annual contribution
+  const annualContribution = type === "percentage"
     ? salary * (contributionValue / 100)
     : contributionValue * paychecksPerYear;
 
   const projectedAnnualContribution = annualContribution;
   const projectedYearEnd = (ytdContributions || 0) + projectedAnnualContribution;
-  
-  const isOverLimit = projectedYearEnd > IRS_ANNUAL_LIMIT_2024;
-  const isNearLimit = projectedYearEnd > IRS_ANNUAL_LIMIT_2024 * 0.9; // Within 90% of limit
-  const remainingCapacity = Math.max(0, IRS_ANNUAL_LIMIT_2024 - (ytdContributions || 0));
+
+  // see if it is a good limit
+  const applicableLimit = userAge >= 50 ? IRS_ANNUAL_LIMIT_2025 + IRS_CATCH_UP_LIMIT : IRS_ANNUAL_LIMIT_2025;
+
+  const isOverLimit = projectedYearEnd > applicableLimit;
+  const isNearLimit = projectedYearEnd > applicableLimit * 0.9; // Within 90% of limit
+  const remainingCapacity = Math.max(0, applicableLimit - (ytdContributions || 0));
   const maxContribution = remainingCapacity;
 
-  // Calculate max percentage that would hit the limit
-  const maxPercentageForLimit = salary > 0 
+  // max percentage to hit the limit
+  const maxPercentageForLimit = salary > 0
     ? Math.min(100, (maxContribution / salary) * 100)
     : 0;
 
-  // Only show warning if approaching or exceeding limit (to avoid cluttering UI)
+  // warn if the limit is hit
   if (!isOverLimit && !isNearLimit) return null;
 
   return (
-    <div className={`mt-4 p-4 rounded-lg border ${
-      isOverLimit 
-        ? "bg-red-50 border-red-300" 
-        : isNearLimit 
+    <div className={`mt-4 p-4 rounded-lg border ${isOverLimit
+      ? "bg-red-50 border-red-300"
+      : isNearLimit
         ? "bg-yellow-50 border-yellow-300"
         : "bg-blue-50 border-[var(--hi-primary-blue)]"
-    }`}>
+      }`}>
       <div className="flex items-start gap-2">
         <div className="flex-shrink-0 mt-0.5">
           {isOverLimit ? (
@@ -48,19 +52,18 @@ export default function ContributionLimitWarning({ salary, contributionValue, ty
           )}
         </div>
         <div className="flex-1">
-          <h4 className={`font-semibold mb-1 ${
-            isOverLimit ? "text-red-800" : "text-yellow-800"
-          }`}>
+          <h4 className={`font-semibold mb-1 ${isOverLimit ? "text-red-800" : "text-yellow-800"
+            }`}>
             {isOverLimit ? "Contribution Limit Exceeded" : "Approaching Contribution Limit"}
           </h4>
           <p className={`text-sm ${isOverLimit ? "text-red-700" : "text-yellow-700"} mb-2`}>
             {isOverLimit ? (
               <>
-                Your projected year-end contribution of <strong>${Math.round(projectedYearEnd).toLocaleString()}</strong> exceeds the 2024 IRS limit of <strong>${IRS_ANNUAL_LIMIT_2024.toLocaleString()}</strong>. The plan will automatically stop contributions when you reach the limit.
+                Your projected year-end contribution of <strong>${Math.round(projectedYearEnd).toLocaleString()}</strong> exceeds the 2025 IRS limit of <strong>${applicableLimit.toLocaleString()}</strong>. The plan will automatically stop contributions when you reach the limit.
               </>
             ) : (
               <>
-                Your projected year-end contribution of <strong>${Math.round(projectedYearEnd).toLocaleString()}</strong> is approaching the 2024 IRS limit of <strong>${IRS_ANNUAL_LIMIT_2024.toLocaleString()}</strong>. You can contribute up to <strong>${Math.round(maxContribution).toLocaleString()}</strong> more this year.
+                Your projected year-end contribution of <strong>${Math.round(projectedYearEnd).toLocaleString()}</strong> is approaching the 2025 IRS limit of <strong>${applicableLimit.toLocaleString()}</strong>. You can contribute up to <strong>${Math.round(maxContribution).toLocaleString()}</strong> more this year.
               </>
             )}
           </p>
