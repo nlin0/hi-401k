@@ -23,7 +23,7 @@ export default function CurrentContributionIndicator({ type, value, salary, payc
             Annual Total:
           </div>
           <div className="text-xl font-bold text-[var(--hi-primary-blue)]">
-            ${Math.round(annualContrib).toLocaleString()}
+            ${Math.round(annualContrib).toLocaleString()}<span className="text-sm font-normal text-[var(--hi-neutral-mid)] ml-1.5">/year</span>
           </div>
         </div>
       </div>

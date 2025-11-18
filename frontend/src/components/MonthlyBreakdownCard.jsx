@@ -43,7 +43,7 @@ export default function MonthlyBreakdownCard({ salary, contributionValue, type, 
         <div className="flex justify-between items-center">
           <span className="text-sm font-semibold text-[var(--hi-dark-navy)]">Annual Total:</span>
           <span className="text-lg font-bold text-[var(--hi-navy)]">
-            ${Math.round(annualContrib).toLocaleString()}
+            ${Math.round(annualContrib).toLocaleString()}/year
           </span>
         </div>
         {type === "percentage" && (

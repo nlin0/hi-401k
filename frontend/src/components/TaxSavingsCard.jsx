@@ -22,7 +22,9 @@ export default function TaxSavingsCard({ salary, contributionValue, type, payche
         <div className="flex justify-between items-center">
           <span className="text-sm text-[var(--hi-neutral-mid)]">Annual Contribution:</span>
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-[var(--hi-primary-blue)]">${Math.round(annualContrib).toLocaleString()}</span>
+            <span className="font-semibold text-[var(--hi-primary-blue)]">
+              ${Math.round(annualContrib).toLocaleString()}/year
+            </span>
             {type === "dollar" && (
               <span className="text-xs text-[var(--hi-neutral-mid)]">
                 ({contribPct.toFixed(1)}% of salary)
@@ -33,12 +35,16 @@ export default function TaxSavingsCard({ salary, contributionValue, type, payche
 
         <div className="flex justify-between items-center">
           <span className="text-sm text-[var(--hi-neutral-mid)]">Annual Tax Savings (est. {taxRate * 100}%):</span>
-          <span className="font-semibold text-[var(--hi-primary-blue)]">-${Math.round(taxSavings).toLocaleString()}</span>
+          <span className="font-semibold text-[var(--hi-primary-blue)]">
+            -${Math.round(taxSavings).toLocaleString()}/year
+          </span>
         </div>
 
         <div className="border-t border-[var(--hi-gray-border)] pt-2 flex justify-between items-center">
           <span className="text-sm font-semibold text-[var(--hi-dark-navy)]">Effective Annual Cost:</span>
-          <span className="text-lg font-bold text-[var(--hi-navy)]">${Math.round(effectiveCost).toLocaleString()}</span>
+          <span className="text-lg font-bold text-[var(--hi-navy)]">
+            ${Math.round(effectiveCost).toLocaleString()}/year
+          </span>
         </div>
 
         <p className="text-xs text-[var(--hi-neutral-mid)] mt-3 italic">
