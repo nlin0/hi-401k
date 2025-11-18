@@ -43,11 +43,33 @@ def save_contribution(payload: dict):
     return {"status": "saved", "data": payload}
 
 
+YTD_FILE = "ytd_data.json"
+
+
+def load_ytd_data():
+    if not os.path.exists(YTD_FILE):
+        return {
+            "salary": 100000,
+            "paychecks_per_year": 26,
+            "ytd_contributions": 5200,
+            "employer_match_rate": 0.50,  # 50% match
+            "employer_match_cap": 6,  # Up to 6% of salary
+        }
+    with open(YTD_FILE, "r") as f:
+        return json.load(f)
+
+
+def save_ytd_data(data):
+    with open(YTD_FILE, "w") as f:
+        json.dump(data, f)
+
+
 @app.get("/api/ytd")
 def get_ytd():
-    # mock data
-    return {
-        "salary": 100000,
-        "paychecks_per_year": 26,
-        "ytd_contributions": 5200,
-    }
+    return load_ytd_data()
+
+
+@app.post("/api/ytd")
+def save_ytd(payload: dict):
+    save_ytd_data(payload)
+    return {"status": "saved", "data": payload}

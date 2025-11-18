@@ -10,15 +10,10 @@ import ContributionInput from "./components/ContributionInput";
 import YTDPanel from "./components/YTDPanel";
 import SaveButton from "./components/SaveButton";
 import ResetButton from "./components/ResetButton";
-import ProjectionCard from "./components/ProjectionCard";
 import ContributionLimitWarning from "./components/ContributionLimitWarning";
 import TaxSavingsCard from "./components/TaxSavingsCard";
 import MonthlyBreakdownCard from "./components/MonthlyBreakdownCard";
-import RetirementProjectionChart from "./components/RetirementProjectionChart";
 import ContributionBreakdownChart from "./components/ContributionBreakdownChart";
-import EmployerMatchCard from "./components/EmployerMatchCard";
-import ContributionLimitProgress from "./components/ContributionLimitProgress";
-import AnnualSummaryCard from "./components/AnnualSummaryCard";
 import Toast from "./components/Toast";
 
 export default function App() {
@@ -54,7 +49,7 @@ export default function App() {
   function handleTypeChange(newType) {
     if (newType === type) return; // No change
 
-    const paychecksPerYear = 26;
+    const paychecksPerYear = ytd?.paychecks_per_year || 26;
     const salary = ytd?.salary || 100000; // Fallback to default salary
 
     if (type === "percentage" && newType === "dollar") {
@@ -101,105 +96,92 @@ export default function App() {
   }
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold mb-8 text-[var(--hi-dark-navy)]">
-        401(k) Contribution Settings
-      </h1>
-
-      {/* FULL-WIDTH VISUALIZATIONS AT TOP */}
-      <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <RetirementProjectionChart
-          salary={ytd?.salary}
-          contributionValue={value}
-          type={type}
-        />
-
-        <div>
-          <ContributionBreakdownChart
-            salary={ytd?.salary}
-            contributionValue={value}
-            type={type}
-            employerMatchRate={ytd?.employer_match_rate}
-            employerMatchCap={ytd?.employer_match_cap}
-          />
-
-          {/* Employer Match Card - below the chart */}
-          <EmployerMatchCard
-            salary={ytd?.salary}
-            contributionValue={value}
-            type={type}
-            employerMatchRate={ytd?.employer_match_rate}
-            employerMatchCap={ytd?.employer_match_cap}
-          />
+    <div className="min-h-screen bg-[var(--hi-neutral-light)]">
+      {/* Header with Logo */}
+      <div className="bg-[var(--hi-white)] border-b border-[var(--hi-neutral-mid)] shadow-sm">
+        <div className="max-w-7xl mx-auto px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              {/* Fake Logo */}
+              <div className="w-12 h-12 bg-[var(--hi-primary-blue)] rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-xl">HI</span>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-[var(--hi-dark-navy)]">
+                  Manage Your 401(k)
+                </h1>
+                <p className="text-sm text-[var(--hi-neutral-mid)] mt-0.5">
+                  Adjust your contribution settings and see your retirement projection
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* TWO-COLUMN RESPONSIVE LAYOUT */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="p-8 max-w-7xl mx-auto">
+        {/* TWO-COLUMN RESPONSIVE LAYOUT */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          {/* LEFT COLUMN: Contribution settings */}
+          <div>
+            <ContributionTypeSelector type={type} setType={handleTypeChange} />
+            <ContributionInput
+              type={type}
+              value={value}
+              setValue={setValue}
+              salary={ytd?.salary}
+              paychecksPerYear={ytd?.paychecks_per_year}
+            />
 
-        {/* LEFT COLUMN: Contribution settings */}
-        <div>
-          <ContributionTypeSelector type={type} setType={handleTypeChange} />
-          <ContributionInput type={type} value={value} setValue={setValue} salary={ytd?.salary} />
+            {/* Contribution Limit Warning */}
+            <ContributionLimitWarning
+              salary={ytd?.salary}
+              contributionValue={value}
+              type={type}
+              ytdContributions={ytd?.ytd_contributions}
+              paychecksPerYear={ytd?.paychecks_per_year}
+            />
 
-          {/* Contribution Limit Progress */}
-          <ContributionLimitProgress
-            salary={ytd?.salary}
-            contributionValue={value}
-            type={type}
-            ytdContributions={ytd?.ytd_contributions}
-          />
+            {/* ACTION BUTTONS */}
+            <SaveButton onSave={handleSave} loading={loading} />
+            <ResetButton onReset={handleReset} loading={loading} />
 
-          {/* Contribution Limit Warning */}
-          <ContributionLimitWarning
-            salary={ytd?.salary}
-            contributionValue={value}
-            type={type}
-            ytdContributions={ytd?.ytd_contributions}
-          />
+            {/* Monthly Breakdown */}
+            <MonthlyBreakdownCard
+              salary={ytd?.salary}
+              contributionValue={value}
+              type={type}
+              paychecksPerYear={ytd?.paychecks_per_year}
+            />
+          </div>
 
-          {/* Monthly Breakdown */}
-          <MonthlyBreakdownCard
-            salary={ytd?.salary}
-            contributionValue={value}
-            type={type}
-          />
+          {/* RIGHT COLUMN: Benefits & Match */}
+          <div>
+            <ContributionBreakdownChart
+              salary={ytd?.salary}
+              contributionValue={value}
+              type={type}
+              employerMatchRate={ytd?.employer_match_rate}
+              employerMatchCap={ytd?.employer_match_cap}
+              paychecksPerYear={ytd?.paychecks_per_year}
+            />
 
-          {/* ACTION BUTTONS */}
-          <SaveButton onSave={handleSave} loading={loading} />
-          <ResetButton onReset={handleReset} loading={loading} />
+            {/* Tax Savings - moved to right column */}
+            <TaxSavingsCard
+              salary={ytd?.salary}
+              contributionValue={value}
+              type={type}
+              paychecksPerYear={ytd?.paychecks_per_year}
+            />
+          </div>
         </div>
 
-        {/* RIGHT COLUMN: Projections & Benefits */}
-        <div>
-          <AnnualSummaryCard
-            salary={ytd?.salary}
-            contributionValue={value}
-            type={type}
-            employerMatchRate={ytd?.employer_match_rate}
-            employerMatchCap={ytd?.employer_match_cap}
-          />
+        {/* FULL-WIDTH YTD PANEL */}
+        <YTDPanel ytd={ytd} onUpdate={(updatedYTD) => setYTD(updatedYTD)} />
 
-          <ProjectionCard
-            salary={ytd?.salary}
-            contributionValue={value}
-            type={type}
-          />
-
-          {/* Tax Savings */}
-          <TaxSavingsCard
-            salary={ytd?.salary}
-            contributionValue={value}
-            type={type}
-          />
-        </div>
+        {/* Toast notification */}
+        <Toast message="Contribution settings saved!" show={toastVisible} />
       </div>
-
-      {/* FULL-WIDTH YTD PANEL */}
-      <YTDPanel ytd={ytd} onUpdate={(updatedYTD) => setYTD(updatedYTD)} />
-
-      {/* Toast notification */}
-      <Toast message="Contribution settings saved!" show={toastVisible} />
     </div>
   );
 }

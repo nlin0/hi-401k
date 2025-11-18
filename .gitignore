@@ -24,6 +24,7 @@ wheels/
 
 # Backend data files (if not needed for testing)
 backend/data.json
+backend/ytd_data.json
 
 # IDE
 .vscode/
