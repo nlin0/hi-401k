@@ -2,15 +2,9 @@
 
 A web application for managing 401(k) contribution settings with real-time projections and calculations.
 
-## Quick Start
-
-### Prerequisites
-- Python 3.10+
-- Node.js 16+ and npm
 
 ### Running Locally
-
-1. **Start the backend:**
+**Start the backend:**
    ```bash
    cd backend
    python -m venv venv
@@ -19,7 +13,7 @@ A web application for managing 401(k) contribution settings with real-time proje
    uvicorn server:app --reload --host 127.0.0.1 --port 8000
    ```
 
-2. **Start the frontend:**
+**Start the frontend:**
    ```bash
    cd frontend
    npm install
