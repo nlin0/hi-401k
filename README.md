@@ -4,21 +4,60 @@ Lightweight tool to explore 401(k) contribution scenarios with mock data.
 
 ## Run locally
 
-**Backend**
+You'll need two terminal windows/tabs—one for the backend and one for the frontend.
+
+### Prerequisites
+
+- Python 3.8+ installed (check with `python --version` or `python3 --version`)
+- Node.js 16+ installed (check with `node --version`)
+- npm installed (comes with Node.js)
+
+### Step 1: Set up the backend
+
+Open your first terminal window and run:
+
 ```bash
+# navigate to the backend folder
 cd backend
+
+# create a virtual environment (isolates Python dependencies)
 python -m venv venv
-source venv/bin/activate   # windows: venv\Scripts\activate
+# on mac/linux:
+source venv/bin/activate
+# on windows:
+# venv\Scripts\activate
+
+# install required Python packages (FastAPI, uvicorn, etc.)
 pip install -r requirements.txt
+
+# start the backend server
 uvicorn server:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-**Frontend**
+You should see `Uvicorn running on http://127.0.0.1:8000`. Keep this terminal open.
+
+### Step 2: Set up the frontend
+
+Open a second terminal window and run:
+
 ```bash
+# navigate to the frontend folder
 cd frontend
+
+# install required Node.js packages (React, Vite, Tailwind, D3, etc.)
 npm install
+
+# start the development server
 npm run dev
 ```
+
+You should see a local URL (usually `http://localhost:5173`). Open this URL in your browser.
+
+### Troubleshooting
+
+- **Backend won't start**: Make sure you activated the virtual environment (you should see `(venv)` in your terminal prompt).
+- **Frontend can't connect**: Make sure the backend is running first (check that `http://127.0.0.1:8000` is accessible).
+- **Port already in use**: If port 8000 or 5173 is taken, kill the process using that port or change the port in the command.
 
 ## How to use
 
