@@ -13,7 +13,7 @@
   background-color: var(--hi-neutral-light);
 }
 
-/* Reset unwanted Vite template styles */
+/* reset unwanted vite */
 body {
   margin: 0;
   min-width: 320px;
