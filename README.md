@@ -1,6 +1,6 @@
-# 401(k) Contribution Management
+# Hi-401(k)! Contribution Management
 
-A web application for managing 401(k) contribution settings with real-time projections and calculations.
+A web application for managing 401(k) contribution settings
 
 
 ### Running Locally
