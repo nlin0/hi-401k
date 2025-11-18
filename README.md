@@ -1,9 +1,5 @@
 ### How to start the program locally
 
-#### Prerequisites
-- Python 3.10+ 
-- Node.js 16+ and npm
-
 #### Backend Setup
 1. Create and activate a virtual environment:
    ```bash
@@ -17,7 +13,7 @@
    pip install -r requirements.txt
    ```
 
-3. Start the backend server:
+3. Start the backend server (you need two terminals):
    ```bash
    uvicorn server:app --reload --host 127.0.0.1 --port 8000
    ```
@@ -40,8 +36,7 @@
    npm run dev
    ```
 
-   The frontend will be running at `http://localhost:5173` (or another port if 5173 is taken)
-
-#### Access the Application
+#### Access hi-401k!
 - Open your browser to the frontend URL (typically `http://localhost:5173`)
-- Make sure both the backend and frontend servers are running for full functionality
+- Make sure both the backend and frontend servers are running
+- That's all! Explore the application
