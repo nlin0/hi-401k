@@ -3,12 +3,12 @@ import { useState, useEffect } from "react";
 export default function ContributionInput({ type, value, setValue, salary, paychecksPerYear = 26 }) {
   const [localValue, setLocalValue] = useState(String(value));
 
-  // Sync local value when prop value changes (e.g., from API load)
+  // sync local value when prop value changes (e.g., from API load)
   useEffect(() => {
     setLocalValue(String(value));
   }, [value]);
 
-  // Quick action buttons for common contribution percentages
+  // buttons for common contribution percentages
   const quickActions = [3, 6, 10, 15];
 
   return (
@@ -29,7 +29,7 @@ export default function ContributionInput({ type, value, setValue, salary, paych
             onChange={(e) => setValue(Number(e.target.value))}
             className="w-full accent-[var(--hi-primary-blue)] mb-3"
           />
-          {/* Quick action buttons */}
+          {/* ACTION BUTTONS ARE HERE */}
           <div className="flex gap-2 justify-center">
             {quickActions.map((percent) => (
               <button
@@ -68,9 +68,8 @@ export default function ContributionInput({ type, value, setValue, salary, paych
               const inputValue = e.target.value;
               setLocalValue(inputValue);
 
-              // Only update parent value if input is a valid number
+              // allow intermediate states while typing (empty, minus, decimal point)
               if (inputValue === "" || inputValue === "-" || inputValue === ".") {
-                // Allow intermediate states while typing (empty, minus, decimal point)
                 return;
               }
 
@@ -80,7 +79,7 @@ export default function ContributionInput({ type, value, setValue, salary, paych
               }
             }}
             onBlur={() => {
-              // When user leaves the field, ensure we have a valid number
+              // user leaves the field, ensure there is a valid number
               const numValue = Number(localValue);
               if (isNaN(numValue) || localValue === "") {
                 setLocalValue(String(value || 0));
@@ -93,7 +92,7 @@ export default function ContributionInput({ type, value, setValue, salary, paych
             className="w-full border-2 border-[var(--hi-neutral-mid)] p-3 rounded-lg text-lg focus:border-[var(--hi-primary-blue)] focus:ring-2 focus:ring-[var(--hi-primary-blue)] focus:ring-opacity-20 text-center font-semibold"
             placeholder="0"
           />
-          {/* Calculate and show percentage of salary */}
+          {/* CALCULATE % SALARY HERE */}
           {salary && (() => {
             const annualContribution = Number(localValue || 0) * paychecksPerYear;
             const percentage = salary > 0 ? (annualContribution / salary) * 100 : 0;
