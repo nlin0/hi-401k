@@ -21,3 +21,13 @@ export async function fetchYTD() {
   const res = await fetch(`${API_BASE}/ytd`);
   return res.json();
 }
+
+// SAVE updated YTD data
+export async function saveYTD(data) {
+  const res = await fetch(`${API_BASE}/ytd`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
