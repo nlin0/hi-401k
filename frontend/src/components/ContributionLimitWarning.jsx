@@ -1,35 +1,27 @@
 export default function ContributionLimitWarning({ salary, contributionValue, type, ytdContributions, paychecksPerYear = 26 }) {
-  // CONSTANTS (dummies in this case)
-  const IRS_ANNUAL_LIMIT_2025 = 23000;
-  const IRS_CATCH_UP_LIMIT = 7500;
-  // yr is not really needed since it's hard coded here..
-  // const currentYear = 2025; 
+  // irs contribution limits for 2025
+  const IRS_LIMIT_2025 = 23000;
+  const IRS_CATCH_UP = 7500; // additional for age 50+
   const userAge = 30;
 
   if (!salary) return null;
 
-  // calculate annual contribution
-  const annualContribution = type === "percentage"
+  // calculate projected annual contribution
+  const annualContrib = type === "percentage"
     ? salary * (contributionValue / 100)
     : contributionValue * paychecksPerYear;
 
-  const projectedAnnualContribution = annualContribution;
-  const projectedYearEnd = (ytdContributions || 0) + projectedAnnualContribution;
+  // project year-end total (ytd + remaining year contributions)
+  const projYearEnd = (ytdContributions || 0) + annualContrib;
+  const limit = userAge >= 50 ? IRS_LIMIT_2025 + IRS_CATCH_UP : IRS_LIMIT_2025;
 
-  // see if it is a good limit
-  const applicableLimit = userAge >= 50 ? IRS_ANNUAL_LIMIT_2025 + IRS_CATCH_UP_LIMIT : IRS_ANNUAL_LIMIT_2025;
+  // check if over or approaching limit
+  const isOverLimit = projYearEnd > limit;
+  const isNearLimit = projYearEnd > limit * 0.9; // within 90% of limit
+  const remaining = Math.max(0, limit - (ytdContributions || 0));
+  const maxPct = salary > 0 ? Math.min(100, (remaining / salary) * 100) : 0;
 
-  const isOverLimit = projectedYearEnd > applicableLimit;
-  const isNearLimit = projectedYearEnd > applicableLimit * 0.9; // Within 90% of limit
-  const remainingCapacity = Math.max(0, applicableLimit - (ytdContributions || 0));
-  const maxContribution = remainingCapacity;
-
-  // max percentage to hit the limit
-  const maxPercentageForLimit = salary > 0
-    ? Math.min(100, (maxContribution / salary) * 100)
-    : 0;
-
-  // warn if the limit is hit
+  // only show warning if over or near limit
   if (!isOverLimit && !isNearLimit) return null;
 
   return (
@@ -37,7 +29,7 @@ export default function ContributionLimitWarning({ salary, contributionValue, ty
       ? "bg-red-50 border-red-300"
       : isNearLimit
         ? "bg-yellow-50 border-yellow-300"
-        : "bg-blue-50 border-[var(--hi-primary-blue)]"
+        : "bg-[var(--hi-light-blue)] border-[var(--hi-navy)]"
       }`}>
       <div className="flex items-start gap-2">
         <div className="flex-shrink-0 mt-0.5">
@@ -59,17 +51,17 @@ export default function ContributionLimitWarning({ salary, contributionValue, ty
           <p className={`text-sm ${isOverLimit ? "text-red-700" : "text-yellow-700"} mb-2`}>
             {isOverLimit ? (
               <>
-                Your projected year-end contribution of <strong>${Math.round(projectedYearEnd).toLocaleString()}</strong> exceeds the 2025 IRS limit of <strong>${applicableLimit.toLocaleString()}</strong>. The plan will automatically stop contributions when you reach the limit.
+                Your projected year-end contribution of <strong>${Math.round(projYearEnd).toLocaleString()}</strong> exceeds the 2025 IRS limit of <strong>${limit.toLocaleString()}</strong>. The plan will automatically stop contributions when you reach the limit.
               </>
             ) : (
               <>
-                Your projected year-end contribution of <strong>${Math.round(projectedYearEnd).toLocaleString()}</strong> is approaching the 2025 IRS limit of <strong>${applicableLimit.toLocaleString()}</strong>. You can contribute up to <strong>${Math.round(maxContribution).toLocaleString()}</strong> more this year.
+                Your projected year-end contribution of <strong>${Math.round(projYearEnd).toLocaleString()}</strong> is approaching the 2025 IRS limit of <strong>${limit.toLocaleString()}</strong>. You can contribute up to <strong>${Math.round(remaining).toLocaleString()}</strong> more this year.
               </>
             )}
           </p>
-          {!isOverLimit && maxPercentageForLimit > 0 && (
+          {!isOverLimit && maxPct > 0 && (
             <p className="text-xs text-yellow-600">
-              Maximum percentage to stay within limit: <strong>{maxPercentageForLimit.toFixed(1)}%</strong>
+              Maximum percentage to stay within limit: <strong>{maxPct.toFixed(1)}%</strong>
             </p>
           )}
         </div>

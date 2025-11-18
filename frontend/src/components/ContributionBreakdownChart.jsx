@@ -2,9 +2,10 @@ import { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
 export default function ContributionBreakdownChart({ salary, contributionValue, type, employerMatchRate, employerMatchCap, paychecksPerYear = 26 }) {
+  // ref for d3 svg element
   const svgRef = useRef(null);
 
-  // GRAPH FOR CONTRIBUTION BREAKDOWN
+  // render d3 pie chart for contribution breakdown
   useEffect(() => {
     if (!salary || !svgRef.current || !employerMatchRate) return;
     d3.select(svgRef.current).selectAll("*").remove();
@@ -12,6 +13,7 @@ export default function ContributionBreakdownChart({ salary, contributionValue, 
     const height = 180;
     const radius = Math.min(width, height) / 2 - 15;
 
+    // create svg and center it
     const svg = d3
       .select(svgRef.current)
       .attr("width", width)
@@ -19,7 +21,7 @@ export default function ContributionBreakdownChart({ salary, contributionValue, 
       .append("g")
       .attr("transform", `translate(${width / 2},${height / 2})`);
 
-    // calculate contributions
+    // calculate employee and employer contributions for chart
     const annualEmployeeContribution = type === "percentage"
       ? salary * (contributionValue / 100)
       : contributionValue * paychecksPerYear;
@@ -28,18 +30,21 @@ export default function ContributionBreakdownChart({ salary, contributionValue, 
       ? (annualEmployeeContribution / salary) * 100
       : 0;
 
+    // calculate employer match (match only applies up to cap percentage)
     const matchCapPercentage = employerMatchCap || 6;
     const eligibleSalaryForMatch = Math.min(contributionPercentage, matchCapPercentage);
     const employerMatchPercentage = (eligibleSalaryForMatch / 100) * employerMatchRate;
     const annualEmployerMatch = salary * employerMatchPercentage;
 
+    // prepare data for pie chart (filter out zero values)
     const data = [
-      { label: "Your Contribution", value: annualEmployeeContribution, color: "#0059FF" },
-      { label: "Employer Match", value: annualEmployerMatch, color: "#0A1E40" }
+      { label: "Your Contribution", value: annualEmployeeContribution, color: "#01b7aa" },
+      { label: "Employer Match", value: annualEmployerMatch, color: "#022a4d" }
     ].filter(d => d.value > 0);
 
     if (data.length === 0) return;
 
+    // configure d3 pie and arc generators (donut chart)
     const pie = d3.pie().value(d => d.value).sort(null);
     const arc = d3.arc().innerRadius(radius * 0.5).outerRadius(radius);
     const arcs = svg
@@ -80,7 +85,7 @@ export default function ContributionBreakdownChart({ salary, contributionValue, 
 
   if (!salary || !employerMatchRate) return null;
 
-  // contributions for display
+  // calculate contributions for display text (duplicated from chart calc above)
   const annualEmployeeContribution = type === "percentage"
     ? salary * (contributionValue / 100)
     : contributionValue * paychecksPerYear;
@@ -97,13 +102,13 @@ export default function ContributionBreakdownChart({ salary, contributionValue, 
   const totalAnnualContribution = annualEmployeeContribution + annualEmployerMatch;
   const freeMoney = annualEmployerMatch;
 
-  // calculate if user is leaving money on the table
+  // check if user is maximizing employer match
   const maxMatchAvailable = salary * (matchCapPercentage / 100) * employerMatchRate;
   const leavingOnTable = maxMatchAvailable - annualEmployerMatch;
   const isMaximizingMatch = contributionPercentage >= matchCapPercentage;
 
   return (
-    <div className="mt-6 p-6 rounded-lg bg-[var(--hi-white)] border border-[var(--hi-neutral-mid)] shadow-sm">
+    <div className="mt-6 p-6 rounded-lg bg-[var(--hi-white)] border border-[var(--hi-gray-border)] shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-[var(--hi-dark-navy)] text-lg">
           Employer Match
@@ -113,54 +118,58 @@ export default function ContributionBreakdownChart({ salary, contributionValue, 
             Maximized
           </span>
         ) : (
-          <span className="px-3 py-1 text-xs font-semibold bg-[var(--hi-neutral-mid)] text-[var(--hi-white)] rounded-full">
+          <span className="px-3 py-1 text-xs font-semibold bg-[var(--hi-gray-border)] text-[var(--hi-navy)] rounded-full">
             Not Maximized
           </span>
         )}
       </div>
 
-      {/* Horizontal Legend */}
-      <div className="flex items-center justify-center gap-6 mb-4 pb-4 border-b border-[var(--hi-neutral-mid)]">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-[#0059FF]"></div>
-          <span className="text-sm text-[var(--hi-dark-navy)]">Your Contribution</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-[#0A1E40]"></div>
-          <span className="text-sm text-[var(--hi-dark-navy)]">Employer Match</span>
-        </div>
-      </div>
-
-      <div className="flex items-start gap-6 mb-4">
+      <div className="flex items-center gap-6 mb-4">
         {/* PIE CHART HERE */}
         <div className="flex-shrink-0">
           <svg ref={svgRef}></svg>
         </div>
 
-        {/* EMPLOYEE MATCH IS HERE */}
-        <div className="flex-1 space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-[var(--hi-neutral-mid)]">Your Contribution:</span>
-            <span className="font-semibold text-[var(--hi-dark-navy)]">${Math.round(annualEmployeeContribution).toLocaleString()}/year</span>
-            {type === "dollar" && (
-              <span className="text-xs text-[var(--hi-neutral-mid)] ml-2">
-                ({contributionPercentage.toFixed(1)}% of salary)
-              </span>
-            )}
+        <div className="flex-1 space-y-3">
+          <div className="flex justify-between items-center gap-4">
+            <span className="text-sm text-[var(--hi-neutral-mid)] flex-shrink-0">Your Contribution:</span>
+            <div className="flex flex-col items-end gap-1">
+              <span className="font-semibold text-[var(--hi-primary-blue)] text-right">${Math.round(annualEmployeeContribution).toLocaleString()}/year</span>
+              {type === "dollar" && (
+                <span className="text-xs text-[var(--hi-neutral-mid)] text-right">
+                  ({contributionPercentage.toFixed(1)}% of salary)
+                </span>
+              )}
+            </div>
           </div>
-          <div className="flex justify-between items-center flex-wrap gap-1">
-            <span className="text-sm text-[var(--hi-neutral-mid)]">Employer Match ({employerMatchRate * 100}% match, up to {matchCapPercentage}%):</span>
-            <span className="font-semibold text-[var(--hi-primary-blue)]">+${Math.round(annualEmployerMatch).toLocaleString()}/year</span>
+          <div className="flex justify-between items-center gap-4">
+            <div className="text-sm text-[var(--hi-neutral-mid)] flex-shrink-0">
+              <div>Employer Match</div>
+              <div>({employerMatchRate * 100}% match, up to {matchCapPercentage}%)</div>
+            </div>
+            <span className="font-semibold text-[var(--hi-primary-blue)] text-right">+${Math.round(annualEmployerMatch).toLocaleString()}/year</span>
           </div>
-          <div className="border-t border-[var(--hi-neutral-mid)] pt-2 flex justify-between items-center">
-            <span className="text-sm font-semibold text-[var(--hi-dark-navy)]">Total Contribution:</span>
-            <span className="text-lg font-bold text-[var(--hi-primary-blue)]">${Math.round(totalAnnualContribution).toLocaleString()}/year</span>
+          <div className="border-t border-[var(--hi-gray-border)] pt-2 flex justify-between items-center gap-4">
+            <span className="text-sm font-semibold text-[var(--hi-dark-navy)] flex-shrink-0">Total Contribution:</span>
+            <span className="text-lg font-bold text-[var(--hi-navy)] text-right">${Math.round(totalAnnualContribution).toLocaleString()}/year</span>
           </div>
         </div>
       </div>
 
+      {/* LEGEND IS HERE */}
+      <div className="flex items-center justify-center gap-6 mb-4 pb-4 border-b border-[var(--hi-gray-border)]">
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 rounded bg-[#01b7aa]"></div>
+          <span className="text-sm text-[var(--hi-dark-navy)]">Your Contribution</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 rounded bg-[#022a4d]"></div>
+          <span className="text-sm text-[var(--hi-dark-navy)]">Employer Match</span>
+        </div>
+      </div>
+
       {!isMaximizingMatch && leavingOnTable > 0 && (
-        <div className="mt-3 p-3 bg-blue-50 border border-[var(--hi-primary-blue)] rounded">
+        <div className="mt-3 p-3 bg-[var(--hi-light-blue)] border border-[var(--hi-primary-blue)] rounded">
           <p className="text-xs text-[var(--hi-dark-navy)]">
             <strong>Tip:</strong> Increase your contribution to {matchCapPercentage}% of salary ({Math.round(salary * matchCapPercentage / 100).toLocaleString()}/year) to maximize your employer match.
             You're leaving <strong>${Math.round(leavingOnTable).toLocaleString()}/year</strong> of free money on the table!

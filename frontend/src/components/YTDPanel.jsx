@@ -2,7 +2,9 @@ import { useState } from "react";
 import { saveYTD } from "../api/contribution";
 
 export default function YTDPanel({ ytd, onUpdate }) {
+  // state for edit mode toggle
   const [isEditing, setIsEditing] = useState(false);
+  // state for edited ytd values (separate from prop to allow cancel)
   const [editedYTD, setEditedYTD] = useState({
     salary: ytd?.salary || 100000,
     paychecks_per_year: ytd?.paychecks_per_year || 26,
@@ -13,6 +15,7 @@ export default function YTDPanel({ ytd, onUpdate }) {
 
   if (!ytd) return null;
 
+  // save edited ytd data to backend and update parent
   const handleSave = async () => {
     await saveYTD(editedYTD);
     setIsEditing(false);
@@ -21,6 +24,7 @@ export default function YTDPanel({ ytd, onUpdate }) {
     }
   };
 
+  // cancel editing and reset to original values
   const handleCancel = () => {
     setEditedYTD({
       salary: ytd.salary,
